@@ -59,13 +59,12 @@
 			undersampling in any of these spaces, and each technique here as a different trade between
 			taking more samples and filtering the signal before sampling it.
 		</p>
-		<p>We did not implement any of the extra credit items.</p>
+		<p>We implemented the extra credits for Task 1 and Task 3.</p>
 
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
 		<p> 
 			We rasterize triangles by first settings a max and min bound for what pixels to test to see if they're in the triangle, then using <code>line_test</code> to see if a tested point is inside or outside the triangle using a cross product by seeing if the point is on the same side of all 3 edges of the triangle (since if it's on the same side of all 3 lines, then it's inside the triangle). After that, we assign different colors depending on if the point is inside or outside. 
 		</p>
-		
 		<p>
 			<b>Why it is no worse than the bounding-box algorithm.</b> My algorithm is the bounding-box algorithm.
 			This is because it creates a bounding box, then does the 3 edge test cross products on all points within the box to determine if the point is in the triangle.
@@ -77,6 +76,18 @@
 			<figcaption><code>basic/test4.svg</code> with the default viewing parameters (1 sample/pixel). The
 				pixel inspector is centered on the thin red triangle, whose edges show clear staircase aliasing.</figcaption>
 		</figure>
+		<h3>Extra Credit</h3>
+		<p>I optimized the flat-color triangle rasterizer by limiting each pixel row to the horizontal span touched by the triangle. For each pixel in that span, I use precomputed edge coefficients to reject pixels completely outside the triangle or fill all samples of pixels completely inside it. Only boundary pixels need the original per-sample edge tests. I also traverse rows in framebuffer order and clip drawing to the framebuffer bounds. The original bounding-box implementation remains available for comparison.</p>
+		<p>With LLM's help, I benchmarked 103 deterministic triangles, including long, thin triangles, in a 256 &times; 256 framebuffer. Each result is the median of five trials; each trial drew the same triangles five times in a Release build. Timing excludes clearing and resolving the framebuffer. I compared the two implementations on each triangle individually and checked their complete output at sample rates 1, 4, 9, and 16. All outputs matched.</p>
+		<table style="border-collapse: collapse; margin: 0 auto; text-align: right;">
+			<tr><th style="padding: 4px 12px;">Samples per pixel</th><th style="padding: 4px 12px;">Basic</th><th style="padding: 4px 12px;">Optimized</th><th style="padding: 4px 12px;">Speedup</th></tr>
+			<tr><td>1</td><td>21.18 ms</td><td>8.17 ms</td><td>2.59&times;</td></tr>
+			<tr><td>4</td><td>59.18 ms</td><td>13.07 ms</td><td>4.53&times;</td></tr>
+			<tr><td>9</td><td>114.75 ms</td><td>23.17 ms</td><td>4.95&times;</td></tr>
+			<tr><td>16</td><td>187.86 ms</td><td>29.89 ms</td><td>6.28&times;</td></tr>
+		</table>
+		<p>I also rendered all 32 supplied SVG files with both implementations at 1024 &times; 1024. Their PNG outputs matched exactly.</p>
+
 
 		<h2>Task 2: Antialiasing by Supersampling</h2>
 		<p>
@@ -123,7 +134,27 @@
 		</p>
 
 		<h2>Task 3: Transforms</h2>
-		
+		<p>We made the cubeman waving.</p>
+		<figure>
+			<img src="assets/my_robot.png" style="width:600px"/>
+			<figcaption>Hi from Cubeman</figcaption>
+		</figure>
+		<h3>Extra Credit</h3>
+		<p>I implemented the R key as rotating 90 degrees clockwise by adding a counter to record the presses. I added a rotation matrix between the SVG-to-NDC and NDC-to-screen transforms. Translating the NDC center to the origin before rotation, then translating it back, keeps the image centered.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table class="results" style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/monalisa0.png" width="300px"/>
+				  <figcaption>Original illustration.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/monalisar.png" width="300px"/>
+				  <figcaption>After pressing R key, the illustration gets rotated 90 degrees clockwise.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 		<h2>Task 4: Barycentric coordinates</h2>
 		
 		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
