@@ -1,5 +1,7 @@
 <html>
 	<head>
+		<meta charset="utf-8">
+		<title>CS184 HW1 Rasterizer</title>
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 		<style>
@@ -18,6 +20,7 @@
 
 			img {
 				display: inline-block;
+				max-width: 100%;
 			}
 
 			body {
@@ -33,149 +36,100 @@
 		<br>
 
 		Link to webpage: <a href="https://cal-cs184-student.github.io/hw1-steph-writeup/">cal-cs184-student.github.io/hw1-steph-writeup/</a>
-		
+
 		<br>
 
 		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/hw1-steph">github.com/cal-cs184-student/hw1-steph</a>
 
-		<figure>
-			<img src="assets/lion.jpg" alt="Lion" style="width:50%"/>
-			<figcaption>You can add images with captions!</figcaption>
-		</figure>
-
-		<!--
-		We've already added one heading per task, to make your write-up as navigable when grading. Please fit your write-up within these sections!
-		-->
-
 		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+		<p>
+			In this homework we built the core of a 2D SVG rasterizer: the stage that turns shapes described
+			in continuous coordinates into a grid of colored pixels. We started from the smallest piece,
+			deciding whether a sample point lies inside a triangle, and built up from there. On top of that
+			test we added supersampling for antialiasing, a hierarchy of 2D transforms, barycentric
+			interpolation of per-vertex colors, and texture mapping with nearest and bilinear pixel sampling
+			and mipmapped level sampling.
+		</p>
+		<p>
+			Nearly every feature turned out to be the same question asked in a different space. Rasterizing
+			is point sampling of a coverage function. Supersampling takes more of those samples per pixel
+			and averages them. Texture mapping samples a second signal, the texture, at locations given by
+			the barycentric coordinates. Mipmapping is prefiltering that signal so that one sample stands in
+			for the whole footprint of a pixel. The most useful thing we learned was to see aliasing as
+			undersampling in any of these spaces, and each technique here as a different trade between
+			taking more samples and filtering the signal before sampling it.
+		</p>
+		<p>We did not implement any of the extra credit items.</p>
 
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-		<figure>
-			<img src="assets/t1.png" style="width:400px"/>
-			<figcaption>basic/test4.svg with the default viewing parameters</figcaption>
-		</figure>
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
-		<div style="display: flex; flex-direction: column; align-items: center;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="assets/lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="assets/lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-			  </tr>
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="assets/lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="assets/lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-			  </tr>
-			</table>
-		</div>
+		<p> 
+			We rasterize triangles by first settings a max and min bound for what pixels to test to see if they're in the triangle, then using <code>line_test</code> to see if a tested point is inside or outside the triangle using a cross product by seeing if the point is on the same side of all 3 edges of the triangle (since if it's on the same side of all 3 lines, then it's inside the triangle). After that, we assign different colors depending on if the point is inside or outside. 
+		</p>
 		
-		<h2>Task 2: Antialiasing by Supersampling</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-		<div style="display: flex; flex-direction: column; align-items: center;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="assets/spsp1.png" width="250px"/>
-				  <figcaption>Supersample rate 1.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="assets/spsp4.png" width="250px"/>
-				  <figcaption>Supersample rate 4.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="assets/spsp16.png" width="250px"/>
-				  <figcaption>Supersample rate 16.</figcaption>
-				</td>
-			  </tr>
-			</table>
-		</div>
-		<h2>Task 3: Transforms</h2>		
-		<b>pretty sure i didnt do it correctly wxu u can handle it XD</b>
-		<h2>Task 4: Barycentric coordinates</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-		<figure>
-			<img src="assets/barycentric.png" style="width:400px"/>
-			<figcaption>basic/test4.svg with the default viewing parameters</figcaption>
-		</figure>
-		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-		<div style="display: flex; flex-direction: column; align-items: center;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="assets/t5n1.png" width="400px"/>
-				  <figcaption>nearest pixel sampling rate 1.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="assets/t5n16.png" width="400px"/>
-				  <figcaption>nearest pixel sampling rate 16.</figcaption>
-				</td>
-			  </tr>
-				<tr>
-				<td style="text-align: center;">
-				  <img src="assets/t5b1.png" width="400px"/>
-				  <figcaption>bilinear pixel sampling rate 1.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="assets/t5b16.png" width="400px"/>
-				  <figcaption>bilinear pixel sampling rate 16.</figcaption>
-				</td>
-			  </tr>
-			</table>
-		</div>
-		<h2>Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-		, , , as well as L_NEAREST and P_LINEAR.
-		<div style="display: flex; flex-direction: column; align-items: center;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="assets/l0pn.png" width="400px"/>
-				  <figcaption>L_ZERO and P_NEAREST</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="assets/l0pl.png" width="400px"/>
-				  <figcaption>L_ZERO and P_LINEAR</figcaption>
-				</td>
-			  </tr>
-				<tr>
-				<td style="text-align: center;">
-				  <img src="assets/lnpn.png" width="400px"/>
-				  <figcaption>L_NEAREST and P_NEAREST</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="assets/lnpl.png" width="400px"/>
-				  <figcaption>L_NEAREST and P_LINEAR</figcaption>
-				</td>
-			  </tr>
-			</table>
-		</div>
-		<h2>(Optional) Task 7: Extra Credit - Draw Something Creative!</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>
+			<b>Why it is no worse than the bounding-box algorithm.</b> My algorithm is the bounding-box algorithm.
+			This is because it creates a bounding box, then does the 3 edge test cross products on all points within the box to determine if the point is in the triangle.
+			This means cost is proportional to the area of the bounding box, meaning it is not worse than the bounding box algorithm.
 
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
+		</p>
+		<figure>
+			<img src="assets/t1.png" style="width:600px"/>
+			<figcaption><code>basic/test4.svg</code> with the default viewing parameters (1 sample/pixel). The
+				pixel inspector is centered on the thin red triangle, whose edges show clear staircase aliasing.</figcaption>
+		</figure>
+
+		<h2>Task 2: Antialiasing by Supersampling</h2>
+		<p>
+			The reason we use supersampling for this is because using our rasterizer, a pixel will either be the color of the triangle that it's center is in or no color.
+			However, a percentage of the pixel can be in a triangle without the center being in it, and vice versa. 
+			This means we should supersample to see what percentage of a pixel is in each triangle.
+			Since it's hard to compute the exact percentages, our code estimated it instead.
+		</p>
+		<p>
+			<b>What we did:</b> The first step of our algorithm is have several samples for each pixel, so it can have a range of colors. 
+			The data structure we used for this is a resizable array to hold the samples in a way such that each pixels samples are next to each other. This is the main data structure we use, and its size is width * height * sample rate.
+			After that, we take multiple samples within each pixel in an nxn grid pattern and have each sample stored in it's own slot.
+			Once we had the samples, we average them into the actual color of the pixel.
+			Finally, we color in the pixels appropriately.		
+		</p>
+		<p>
+			<b>Pipeline changes.</b> Firstly, we now test each pixel multiple times instead of once depending on the rate we use.
+			As a result, we also store the pixel information in a resizable array instead.
+			We also write more than one color per pixel now and also add a completely new step which averages the colors of all the sub pixels in the pixel to determine the color of the pixel.
+		</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table class="results" style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/spsp1.png" width="300px"/>
+				  <figcaption>Sample rate 1</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/spsp4.png" width="300px"/>
+				  <figcaption>Sample rate 4</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/spsp16.png" width="300px"/>
+				  <figcaption>Sample rate 16</figcaption>
+				</td>
+			  </tr>
+			</table>
 		</div>
+		<p>
+			<b>Results.</b>
+			For rate 1, the single center sample misses the triangle quite often, so it stays white at a high frequency.
+			For rate 4, instead of one chance for the triangle edge to hit the triangle, it has 4 chances, so it begins to look more connected because the triangle gets 1-2/4 samples a good amount, making the pixel look a light shade.
+			For rate 16, the estimation is much better, since you're using a 4x4 grid. This makes the triangle look much smoother, including near the tips so the triangles fade out gradually.
+		</p>
+
+		<h2>Task 3: Transforms</h2>
+		
+		<h2>Task 4: Barycentric coordinates</h2>
+		
+		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
+			
+
+		<h2>Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
+		
 	</body>
 </html>
