@@ -152,6 +152,16 @@
 		</figure>
 
 		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
+		<p>
+			Each point on the screen usually ends up between the pixels of a texture, so pixel mapping is how to choose a color from a texture for a given point on a screen (which is likely between pixels). 
+		</p>
+		<p>
+			In our code, we implemented it by computing the barycentric coordinates like we did in Task 4 to blend the values of the vertices and get a color.
+		</p>
+		<p>
+			The two methods of pixel sampling are nearest and bilinear. Nearest is faster and is done by scaling the point to make it larger using a constant ratio, then takes the color of the texel the point falls into first. As a result, it effectively takes the color of the nearest texel. Bilinear finds the 4 texels around it and blends the colors based on how close it is to each texel. As a result, it is 4 times slower than nearest sampling.
+		</p>
+
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table class="results" style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
@@ -177,7 +187,29 @@
 			</table>
 		</div>
 
+		<p>
+			Nearest sampling at 1 sample per pixel looks broken and jagged since each pixel either lands on a texel or misses it. Bilinear sampling at 1 sample per pixel is smoother than nearest since it picks up parts of its coloring from all neighboring texels so the lines look more continuous. For sampling at 16 samples per pixel, both samples look smoother since now you’re looking up 4x4 per pixel instead of just one point. However, the increase in quality for bilinear was not that large, and likely not large enough to justify using 16x the samples.
+
+		</p>
+		<p>
+			There is a large difference in the sampling methods when one texel covers several pixels on the screen, or when the texture is very fine.
+			For example, this is the case for text. This is because nearest would just show the single color closest to it, which would make the fine details look very jagged.
+			However, bilinear would take everything into account and make it smoother.
+		</p>
+
 		<h2>Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
+		<p>
+			Level sampling is choosing what size of pixels to use for the displayed picture.
+			This is because for different screen sizes, the pixels are shrunk certain amounts, so if you use pixels too large on a smaller screen and then dilate them, the picture will look blurry. 
+		</p>
+		<p>
+			We implemented this by measuring the dilation of a pixel at each spot, then turning this into a level number. After that, you sample the appropriate level then using a sampling method on it.
+		</p>
+		<p>
+			For speed: level sampling is the fastest since you only need to pick a level. Pixel sampling is a bit slower since you use 4 texel reads instead of 1. Supersampling is the slowest since you do 16x the work.
+			For memory: pixel sampling adds no extra memory. Level sampling uses a fraction more memory while supersampling uses around 16x the memory.
+			For antialiasing power: supersampling effectively fixes everything, as a tradeoff for being the most expensive. Pixel sampling smoothes blocky edges for enlarged textures but don't do much with shrunk textures. On the contrary, level samples is great when the texture is shrunk since it removes noisy patterns but can make this blurry as a result.
+		</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table class="results" style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
