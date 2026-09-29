@@ -125,7 +125,7 @@
 		<p>We were trying to make cubeman look like he was waving. To do this, we transformed the code we wrote into an SVG, since then we can have each individual body part be modified on its own. After that, I put all the body parts into the correct place to make it look like it is waving (i.e. right arm -30 degrees, right elbow another -75 degrees, etc).</p>
 		<figure>
 			<img src="assets/my_robot.png" style="width:600px"/>
-			<figcaption>Hi from Cubeman</figcaption>
+			<figcaption>"Hi!" from Cubeman</figcaption>
 		</figure>
 		<h3>Extra Credit</h3>
 		<p>I implemented the R key as rotating 90 degrees clockwise by adding a counter to record the presses. I added a rotation matrix between the SVG-to-NDC and NDC-to-screen transforms. Translating the NDC center to the origin before rotation, then translating it back, keeps the image centered.</p>
@@ -144,8 +144,29 @@
 			</table>
 		</div>
 		<h2>Task 4: Barycentric coordinates</h2>
-		<p>Barycentric coordinates are coordinates which you can use to express the color of a point as a weighted average of the three corners, where the weights are determined by how much a corner will affect the point which is estimated as the distance of the point from a corner. As a result, the weight determined is larger the closer the point is to a corner, which makes the color closer to the color of that corner. This is shown in the RGB triangle, where the strength of one of the colors at any given point is based on how far that point is from the corresponding corner.
-</p>
+		<p>
+			Barycentric coordinates are a way to describe where a point lies inside a triangle using three weights, one for each vertex. Suppose the triangle has vertices \(V_A\), \(V_B\), and \(V_C\). Any point \(V\) inside the triangle can be written as
+\[
+V=\alpha V_A+\beta V_B+\gamma V_C,
+\qquad
+\alpha+\beta+\gamma=1.
+\]
+			<figure>
+				<img src="assets/barycentric_explanation.png" style="width:600px"/>
+			<figcaption></figcaption>
+			</figure>
+			so \(\alpha, \beta, \gamma\) hints how much influence each vertex has for a specific point inside the triangle. 
+
+			Then we calculate the color of \(V\) based on the weights as 
+			\[
+				\text{Color}(V)
+=\alpha\text{Color}(V_A)
++\beta\text{Color}(V_B)
++\gamma\text{Color}(V_C).
+			\]
+
+			As a result, the weight determined is larger the closer the point is to a corner, which makes the color closer to the color of that corner. This is shown in the RGB triangle, where the strength of one of the colors at any given point is based on how far that point is from the corresponding corner.
+		</p>
 		<figure>
 			<img src="assets/barycentric.png" style="width:600px"/>
 			<figcaption><code>basic/test7.svg</code> with default viewing parameters and sample rate 1.</figcaption>
@@ -188,7 +209,7 @@
 		</div>
 
 		<p>
-			Nearest sampling at 1 sample per pixel looks broken and jagged since each pixel either lands on a texel or misses it. Bilinear sampling at 1 sample per pixel is smoother than nearest since it picks up parts of its coloring from all neighboring texels so the lines look more continuous. For sampling at 16 samples per pixel, both samples look smoother since now you’re looking up 4x4 per pixel instead of just one point. However, the increase in quality for bilinear was not that large, and likely not large enough to justify using 16x the samples.
+			Nearest sampling at 1 sample per pixel looks broken and jagged since each pixel either lands on a texel or misses it. Bilinear sampling at 1 sample per pixel is smoother than nearest since it picks up parts of its coloring from all neighboring texels so the lines look more continuous. For sampling at 16 samples per pixel, both samples look smoother since now you're looking up 4x4 per pixel instead of just one point. However, the increase in quality for bilinear was not that large, and likely not large enough to justify using 16x the samples.
 
 		</p>
 		<p>
@@ -206,9 +227,13 @@
 			We implemented this by measuring the dilation of a pixel at each spot, then turning this into a level number. After that, you sample the appropriate level then using a sampling method on it.
 		</p>
 		<p>
-			For speed: level sampling is the fastest since you only need to pick a level. Pixel sampling is a bit slower since you use 4 texel reads instead of 1. Supersampling is the slowest since you do 16x the work.
-			For memory: pixel sampling adds no extra memory. Level sampling uses a fraction more memory while supersampling uses around 16x the memory.
-			For antialiasing power: supersampling effectively fixes everything, as a tradeoff for being the most expensive. Pixel sampling smoothes blocky edges for enlarged textures but don't do much with shrunk textures. On the contrary, level samples is great when the texture is shrunk since it removes noisy patterns but can make this blurry as a result.
+			<b>For speed</b>: level sampling is the fastest since you only need to pick a level. Pixel sampling is a bit slower since you use 4 texel reads instead of 1. Supersampling is the slowest since you do 16x the work.
+			</p>
+<p>
+			<b>For memory</b>: pixel sampling adds no extra memory. Level sampling uses a fraction more memory while supersampling uses around 16x the memory.
+						</p>
+<p>
+			<b>For antialiasing power</b>: supersampling effectively fixes everything, as a tradeoff for being the most expensive. Pixel sampling smoothes blocky edges for enlarged textures but don't do much with shrunk textures. On the contrary, level samples is great when the texture is shrunk since it removes noisy patterns but can make this blurry as a result.
 		</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table class="results" style="width: 100%; text-align: center; border-collapse: collapse;">
