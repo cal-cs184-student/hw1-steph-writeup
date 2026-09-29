@@ -43,12 +43,9 @@
 
 		<h2>Overview</h2>
 		<p>
-			In this homework we built the core of a 2D SVG rasterizer: the stage that turns shapes described
-			in continuous coordinates into a grid of colored pixels. We started from the smallest piece,
-			deciding whether a sample point lies inside a triangle, and built up from there. On top of that
-			test we added supersampling for antialiasing, a hierarchy of 2D transforms, barycentric
-			interpolation of per-vertex colors, and texture mapping with nearest and bilinear pixel sampling
-			and mipmapped level sampling.
+			In this homework we built a rasterizer that renders svg to computer-displayable pixels. We started off by implementing the fundational triangle rasterizer by line tests and optimized by checking less than every single pixel (rejecting obvious pixels that are outside the triangle). Then we fix alias by implementing a supersampling to make the edges not jaggy. We implemented barycentric interpolation for smoother colors and texture coordinates. The pixel sampling and level sampling implemented also help reduce aliasing at different scales. We also implemented transform, including translate, scale, and rotate which are common in computer graphics processing, and applied rotate 90 degrees clockwise with <code>R</code> hotkey shortcut. 
+
+			The most interesting part was seeing how the stages of the pipeline work together: transforms determine where shapes land, rasterizing determines how the graph change from svg data to rendered pixels that are filled with colors, sampling and filtering determine how clean the final image looks.
 		</p>
 		<p>
 			Nearly every feature turned out to be the same question asked in a different space. Rasterizing
