@@ -122,7 +122,7 @@
 		</p>
 
 		<h2>Task 3: Transforms</h2>
-		<p>We made the cubeman waving.</p>
+		<p>We were trying to make cubeman look like he was waving. To do this, we transformed the code we wrote into an SVG, since then we can have each individual body part be modified on its own. After that, I put all the body parts into the correct place to make it look like it is waving (i.e. right arm -30 degrees, right elbow another -75 degrees, etc).</p>
 		<figure>
 			<img src="assets/my_robot.png" style="width:600px"/>
 			<figcaption>Hi from Cubeman</figcaption>
@@ -144,11 +144,64 @@
 			</table>
 		</div>
 		<h2>Task 4: Barycentric coordinates</h2>
-		
+		<p>Barycentric coordinates are coordinates which you can use to express the color of a point as a weighted average of the three corners, where the weights are determined by how much a corner will affect the point which is estimated as the distance of the point from a corner. As a result, the weight determined is larger the closer the point is to a corner, which makes the color closer to the color of that corner. This is shown in the RGB triangle, where the strength of one of the colors at any given point is based on how far that point is from the corresponding corner.
+</p>
+		<figure>
+			<img src="assets/barycentric.png" style="width:600px"/>
+			<figcaption><code>basic/test7.svg</code> with default viewing parameters and sample rate 1.</figcaption>
+		</figure>
+
 		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
-			
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table class="results" style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/t5n1.png" width="400px"/>
+				  <figcaption>Nearest, 1 sample/pixel</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/t5n16.png" width="400px"/>
+				  <figcaption>Nearest, 16 samples/pixel</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/t5b1.png" width="400px"/>
+				  <figcaption>Bilinear, 1 sample/pixel</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/t5b16.png" width="400px"/>
+				  <figcaption>Bilinear, 16 samples/pixel</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 
 		<h2>Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
-		
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table class="results" style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/l0pn.png" width="400px"/>
+				  <figcaption>L_ZERO and P_NEAREST</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/l0pl.png" width="400px"/>
+				  <figcaption>L_ZERO and P_LINEAR</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/lnpn.png" width="400px"/>
+				  <figcaption>L_NEAREST and P_NEAREST</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/lnpl.png" width="400px"/>
+				  <figcaption>L_NEAREST and P_LINEAR</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		</div>
 	</body>
 </html>
