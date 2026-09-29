@@ -47,15 +47,6 @@
 
 			The most interesting part was seeing how the stages of the pipeline work together: transforms determine where shapes land, rasterizing determines how the graph change from svg data to rendered pixels that are filled with colors, sampling and filtering determine how clean the final image looks.
 		</p>
-		<p>
-			Nearly every feature turned out to be the same question asked in a different space. Rasterizing
-			is point sampling of a coverage function. Supersampling takes more of those samples per pixel
-			and averages them. Texture mapping samples a second signal, the texture, at locations given by
-			the barycentric coordinates. Mipmapping is prefiltering that signal so that one sample stands in
-			for the whole footprint of a pixel. The most useful thing we learned was to see aliasing as
-			undersampling in any of these spaces, and each technique here as a different trade between
-			taking more samples and filtering the signal before sampling it.
-		</p>
 		<p>We implemented the extra credits for Task 1 and Task 3.</p>
 
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
